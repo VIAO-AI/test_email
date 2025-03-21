@@ -1,9 +1,10 @@
-// Servidor Express para Vercel Functions
+// Servidor Express para Vercel/Netlify Functions
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { createTransport } from 'nodemailer';
 import dotenv from 'dotenv';
+import http from 'http';
 
 // Configurar dotenv
 dotenv.config();
@@ -86,5 +87,17 @@ app.post('/api/reservas', async (req, res) => {
   }
 });
 
-// Exportar la aplicación Express para Vercel
+// Iniciar servidor HTTP si no estamos en un entorno serverless
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3001;
+  const server = http.createServer(app);
+  
+  server.listen(PORT, () => {
+    console.log(`Servidor iniciado en puerto ${PORT}`);
+    console.log(`API disponible en http://localhost:${PORT}/api`);
+    console.log(`Endpoint de reservas: http://localhost:${PORT}/api/reservas`);
+  });
+}
+
+// Exportar la aplicación Express para Vercel/Netlify
 export default app; 

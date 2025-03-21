@@ -12,6 +12,11 @@ export async function handler(event, context) {
     return {
       statusCode: 405,
       body: JSON.stringify({ error: 'Método no permitido' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
     };
   }
 
@@ -25,8 +30,14 @@ export async function handler(event, context) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Faltan campos requeridos' }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       };
     }
+
+    console.log('Enviando correo con datos:', { nombre, email, telefono, fecha, hora, personas });
 
     // Configurar transportador de correo
     const transporter = createTransport({
@@ -70,6 +81,7 @@ export async function handler(event, context) {
 
     // Enviar correo
     const info = await transporter.sendMail(mailOptions);
+    console.log('Correo enviado:', info.messageId);
 
     return {
       statusCode: 200,
@@ -77,6 +89,10 @@ export async function handler(event, context) {
         message: 'Reserva enviada correctamente',
         id: info.messageId,
       }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     };
   } catch (error) {
     console.error('Error al enviar la reserva:', error);
@@ -87,6 +103,10 @@ export async function handler(event, context) {
         error: 'Error al procesar la reserva',
         details: error.message,
       }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     };
   }
 } 
