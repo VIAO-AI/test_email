@@ -174,13 +174,20 @@ if (process.env.NODE_ENV === 'production') {
   const path = require('path');
   app.use(express.static(path.join(__dirname, 'dist')));
   
-  // Manejar rutas SPA
-  app.get('*', (req, res) => {
+  // Manejar rutas SPA - todas las rutas no API deben ir al index.html
+  app.get('*', (req, res, next) => {
+    // Excluir rutas de API
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
 
-// Iniciar el servidor
-app.listen(PORT, () => {
+// Iniciar el servidor - esto es importante para Vercel
+const server = app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
-}); 
+});
+
+// Exportar app para Vercel
+module.exports = app; 
