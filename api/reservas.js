@@ -1,41 +1,49 @@
-// Función de Netlify para manejar reservas
+// Vercel Serverless Function para manejar reservas
 import { createTransport } from 'nodemailer';
-import dotenv from 'dotenv';
 
-// Configurar dotenv
-dotenv.config();
+// Configurar variables de entorno (Vercel las maneja automáticamente)
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-export const handler = async (event, context) => {
+/**
+ * Función de Vercel para manejar reservas
+ */
+export default async function handler(req, res) {
+  // Configurar CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  // Manejar preflight OPTIONS
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   // Solo permitir método POST
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ error: 'Método no permitido' }),
-    };
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
   }
 
   try {
-    // Parsear el cuerpo de la solicitud
-    const data = JSON.parse(event.body);
-    const { nombre, email, telefono, fecha, hora, personas, mensaje } = data;
+    // Obtener datos del cuerpo de la solicitud
+    const { nombre, email, telefono, fecha, hora, personas, mensaje } = req.body;
 
     // Validar campos requeridos
     if (!nombre || !email || !telefono || !fecha || !hora || !personas) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ error: 'Faltan campos requeridos' }),
-      };
+      return res.status(400).json({ error: 'Faltan campos requeridos' });
     }
 
-    console.log('Enviando reserva:', data);
+    console.log('Procesando reserva:', { nombre, email, telefono, fecha, hora, personas, mensaje });
+
+    // Verificar que tenemos la clave API
+    if (!RESEND_API_KEY) {
+      console.error('Error: No se encontró la clave API de Resend');
+      return res.status(500).json({
+        error: 'Error en la configuración del servidor',
+        details: 'Falta clave API de correo'
+      });
+    }
 
     // Configurar transportador de correo
     const transporter = createTransport({
@@ -44,7 +52,7 @@ export const handler = async (event, context) => {
       secure: true,
       auth: {
         user: 'resend',
-        pass: process.env.RESEND_API_KEY,
+        pass: RESEND_API_KEY,
       },
     });
 
@@ -81,30 +89,16 @@ export const handler = async (event, context) => {
     const info = await transporter.sendMail(mailOptions);
     console.log('Email enviado correctamente:', info.messageId);
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: 'Reserva enviada correctamente',
-        id: info.messageId,
-      }),
-    };
+    return res.status(200).json({
+      message: 'Reserva enviada correctamente',
+      id: info.messageId,
+    });
   } catch (error) {
     console.error('Error al enviar la reserva:', error);
     
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        error: 'Error al procesar la reserva',
-        details: error.message,
-      }),
-    };
+    return res.status(500).json({
+      error: 'Error al procesar la reserva',
+      details: error.message,
+    });
   }
-}; 
+} 
