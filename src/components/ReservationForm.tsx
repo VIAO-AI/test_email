@@ -97,7 +97,12 @@ export default function ReservationForm() {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/api/reservas', {
+      // Determinar la URL base de la API según el entorno
+      const apiBaseUrl = import.meta.env.MODE === 'development' 
+        ? 'http://localhost:3001' 
+        : '';
+      
+      const response = await fetch(`${apiBaseUrl}/api/reservas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
