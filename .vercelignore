@@ -1,0 +1,10 @@
+# Ignorar archivos TypeScript
+*.ts
+*.tsx
+# Excepto para archivos específicos de React que necesitamos
+!src/**/*.tsx
+!src/**/*.ts
+# Ignorar configuración TypeScript
+tsconfig.json
+tsconfig.*.json
+vite.config.ts 
