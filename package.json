@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "server": "node server.js"
+    "server": "node server.js",
+    "postinstall": "pip install -r requirements.txt"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
