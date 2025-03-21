@@ -1,43 +1,41 @@
-// Función Netlify para manejar reservas
+// Función de Netlify para manejar reservas
 import { createTransport } from 'nodemailer';
 import dotenv from 'dotenv';
 
-// Configurar variables de entorno
+// Configurar dotenv
 dotenv.config();
 
-// Handler de Netlify Functions
-export async function handler(event, context) {
+export const handler = async (event, context) => {
   // Solo permitir método POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: 'Método no permitido' }),
       headers: {
-        'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'Método no permitido' }),
     };
   }
 
   try {
-    // Parsear cuerpo de la solicitud
-    const body = JSON.parse(event.body);
-    const { nombre, email, telefono, fecha, hora, personas, mensaje } = body;
+    // Parsear el cuerpo de la solicitud
+    const data = JSON.parse(event.body);
+    const { nombre, email, telefono, fecha, hora, personas, mensaje } = data;
 
     // Validar campos requeridos
     if (!nombre || !email || !telefono || !fecha || !hora || !personas) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Faltan campos requeridos' }),
         headers: {
+          'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+        },
+        body: JSON.stringify({ error: 'Faltan campos requeridos' }),
       };
     }
 
-    console.log('Enviando correo con datos:', { nombre, email, telefono, fecha, hora, personas });
+    console.log('Enviando reserva:', data);
 
     // Configurar transportador de correo
     const transporter = createTransport({
@@ -81,32 +79,32 @@ export async function handler(event, context) {
 
     // Enviar correo
     const info = await transporter.sendMail(mailOptions);
-    console.log('Correo enviado:', info.messageId);
+    console.log('Email enviado correctamente:', info.messageId);
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         message: 'Reserva enviada correctamente',
         id: info.messageId,
       }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
     };
   } catch (error) {
     console.error('Error al enviar la reserva:', error);
     
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         error: 'Error al procesar la reserva',
         details: error.message,
       }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
     };
   }
-} 
+}; 

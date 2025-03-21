@@ -39,7 +39,9 @@ export default function ReservationForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     time: "",
+    people: "",
     guests: "",
     message: "",
     eventType: "",
@@ -72,9 +74,20 @@ export default function ReservationForm() {
     try {
       // Determinar la URL base de la API según el entorno
       const isProduction = window.location.hostname !== 'localhost';
-      const apiBaseUrl = isProduction
-        ? '/.netlify/functions'  // URL para Netlify Functions en producción
-        : 'http://localhost:8888/.netlify/functions'; // URL para desarrollo local
+      let apiBaseUrl;
+      
+      if (isProduction) {
+        // URL para funciones en producción (Netlify o Vercel)
+        apiBaseUrl = '/.netlify/functions';
+      } else {
+        // URL para desarrollo local - puerto 3001 para Express local, 8888 para Netlify CLI
+        const isNetlifyDev = process.env.NODE_ENV === 'development' && window.location.port === '8888';
+        apiBaseUrl = isNetlifyDev 
+          ? '/.netlify/functions'
+          : 'http://localhost:3001/api';
+      }
+      
+      console.log('Enviando reserva a:', `${apiBaseUrl}/reservas`);
       
       const response = await fetch(`${apiBaseUrl}/reservas`, {
         method: 'POST',
@@ -103,7 +116,11 @@ export default function ReservationForm() {
           phone: '',
           time: '',
           people: '',
+          guests: '',
           message: '',
+          eventType: '',
+          attendees: '',
+          eventDescription: ''
         });
         setDate(undefined);
         setReservationType('table');
