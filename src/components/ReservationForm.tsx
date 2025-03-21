@@ -14,6 +14,7 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { z } from "zod";
 
 export interface ReservationData {
   name: string;
@@ -47,6 +48,7 @@ export default function ReservationForm() {
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -63,46 +65,18 @@ export default function ReservationForm() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setSubmitStatus('loading');
-
-    if (!date) {
-      toast({
-        title: language === "en" ? "Error" : "Error",
-        description: language === "en" 
-          ? "Please select a date for your reservation." 
-          : "Por favor selecciona una fecha para tu reserva.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Verificar que todos los campos requeridos están completos
-    const requiredFields = ['name', 'email', 'time', 'guests', 'message'];
     
-    if (reservationType === 'event') {
-      requiredFields.push('eventType');
-      requiredFields.push('attendees');
-    }
-    
-    const isFormValid = requiredFields.every(field => {
-      return formData[field as keyof typeof formData] !== '';
-    });
-
-    if (!isFormValid) {
-      setSubmitStatus('error');
-      setSubmitMessage(language === "en" ? "Please fill in all required fields." : "Por favor, complete todos los campos requeridos.");
-      return;
-    }
-
     try {
       // Determinar la URL base de la API según el entorno
-      const apiBaseUrl = import.meta.env.MODE === 'development' 
-        ? 'http://localhost:3001' 
-        : '';
+      const isProduction = window.location.hostname !== 'localhost';
+      const apiBaseUrl = isProduction
+        ? '/.netlify/functions'  // URL para Netlify Functions en producción
+        : 'http://localhost:8888/.netlify/functions'; // URL para desarrollo local
       
-      const response = await fetch(`${apiBaseUrl}/api/reservas`, {
+      const response = await fetch(`${apiBaseUrl}/reservas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,33 +84,26 @@ export default function ReservationForm() {
         body: JSON.stringify({
           nombre: formData.name,
           email: formData.email,
-          telefono: '',
-          fecha: format(date, 'yyyy-MM-dd'),
+          telefono: formData.phone,
+          fecha: date ? format(date, 'yyyy-MM-dd') : '',
           hora: formData.time,
-          personas: formData.guests,
+          personas: formData.people,
           mensaje: formData.message,
-          tipo_reserva: reservationType,
-          tipo_evento: formData.eventType,
-          asistentes: formData.attendees,
-          descripcion_evento: formData.eventDescription
         }),
       });
 
       const result = await response.json();
       
-      if (result.success) {
+      if (response.ok) {
         setSubmitStatus('success');
         setSubmitMessage(language === "en" ? "Reservation submitted successfully!" : "¡Reserva enviada exitosamente!");
-        // Limpiar el formulario
         setFormData({
           name: '',
           email: '',
+          phone: '',
           time: '',
-          guests: '',
+          people: '',
           message: '',
-          eventType: '',
-          attendees: '',
-          eventDescription: ''
         });
         setDate(undefined);
         setReservationType('table');
@@ -145,7 +112,7 @@ export default function ReservationForm() {
         setSubmitMessage(language === "en" ? "Failed to submit reservation. Please try again." : "Error al enviar la reserva. Por favor, inténtalo de nuevo.");
       }
     } catch (error) {
-      console.error('Error enviando reserva:', error);
+      console.error('Error:', error);
       setSubmitStatus('error');
       setSubmitMessage(language === "en" ? "There was a problem submitting your reservation. Please try again." : "Hubo un problema al enviar tu reserva. Por favor, inténtalo de nuevo.");
     }
