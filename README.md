@@ -1,108 +1,90 @@
+# Sistema de Reservas por Correo
 
-# El Rincon de Jorgito - Web App
+Este proyecto implementa un sistema de reservas para el restaurante El Rincón de Jorgito, permitiendo a los usuarios hacer reservas que se envían automáticamente por correo electrónico.
 
-## Description
+## Características
 
-El Rincon de Jorgito is a modern and functional web platform for a Peruvian restaurant, allowing online orders, dish customization, delivery or pickup options, multiple payment methods, and a loyalty program called "JorgitoRewards."
+- Formulario de reserva con validación de campos
+- Envío de correos usando Resend API
+- API serverless para procesamiento seguro del lado del servidor
+- Soporte para múltiples idiomas (español e inglés)
+- Diseño responsive usando Tailwind CSS y Shadcn/ui
 
-## Main Features
+## Requisitos
 
-- Online orders with dish customization.
-- Delivery and pickup options.
-- Various payment methods.
-- "JorgitoRewards" loyalty program.
-- Modern and optimized interface.
-- Reservation management integrated with Supabase and Vercel.
-- Automated Edge Function deployment via GitHub Actions.
+- Node.js 16+
+- NPM o Yarn
+- Cuenta en Resend para envío de correos
+- Cuenta en Netlify para el despliegue
 
-## Installation and Setup
+## Configuración
 
-1. Clone the repository:
-   ```sh
-   https://github.com/VIAO-AI/el-rincon-digital.git
-   ```
-2. Access the project directory:
-   ```sh
-   cd el-rincon-digital
-   ```
-3. Install dependencies:
-   ```sh
-   npm install
-   ```
-4. Configure environment variables in `.env`:
-   ```env
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_KEY=your_supabase_key
-   ```
-5. Start the development server:
-   ```sh
-   npm run dev
-   ```
-
-## GitHub Actions Deployment Setup
-
-The project is configured to automatically deploy Supabase Edge Functions using GitHub Actions. To set this up:
-
-1. In your GitHub repository, go to Settings > Secrets and Variables > Actions
-2. Add the following secrets:
-   - `SUPABASE_ACCESS_TOKEN`: Your Supabase access token
-   - `RESEND_API_KEY`: Your Resend API key (if using Resend for emails)
-3. When you push changes to the `main` branch that affect files in `supabase/functions/handle-reservation`, 
-   GitHub Actions will automatically deploy the updated Edge Function.
-
-## Project Structure
-
-```
-el-rincon-digital-main/
-│── public/                 # Archivos estáticos y recursos
-│   ├── images-uploads/    # Imágenes subidas por usuarios
-│   ├── favicon.ico         # Ícono del sitio
-│   ├── placeholder.svg     # Imagen de marcador de posición
-│
-│── src/                    # Código fuente principal
-│   ├── components/         # Componentes reutilizables
-│   │   ├── ui/             # Componentes de UI (botones, formularios, etc.)
-│   │   ├── FoodItem.tsx    # Ejemplo de componente
-│   │   ├── Navbar.tsx      # Barra de navegación
-│   │   ├── Footer.tsx      # Pie de página
-│   │
-│   ├── contexts/           # Context API para estado global
-│   │   ├── LanguageContext.tsx
-│   │
-│   ├── hooks/              # Hooks personalizados
-│   │   ├── use-mobile.tsx  # Hook para detectar móvil
-│   │
-│   ├── lib/                # Funciones utilitarias
-│   │   ├── utils.ts
-│   │
-│   ├── pages/              # Páginas principales
-│   │   ├── Index.tsx       # Página de inicio
-│   │   ├── About.tsx       # Página "Sobre Nosotros"
-│   │   ├── Contact.tsx     # Página de contacto
-│   │   ├── Menu.tsx        # Página del menú
-│   │   ├── Admin.tsx       # Panel de administración
-│   │   ├── NotFound.tsx    # Página 404
-│   │
-│   ├── App.tsx             # Componente raíz
-│   ├── main.tsx            # Punto de entrada principal
-│
-│── .github/                # Configuración de GitHub Actions
-│   ├── workflows/
-│   │   ├── deploy-edge-functions.yml
-│
-│── .gitignore              # Archivos ignorados por Git
-│── package.json            # Dependencias del proyecto
-│── tailwind.config.ts      # Configuración de Tailwind CSS
-│── vite.config.ts          # Configuración de Vite
-│── tsconfig.json           # Configuración de TypeScript
-│── README.md               # Documentación del proyecto
-
+1. Clona este repositorio:
+```bash
+git clone https://github.com/VIAO-AI/test_email.git
+cd test_email
 ```
 
-## Contribution
+2. Instala las dependencias:
+```bash
+npm install
+```
 
-This project is private and protected by copyright. Any unauthorized reproduction, distribution, or modification is strictly prohibited.
+3. Crea un archivo `.env` en la raíz del proyecto con la siguiente información:
+```
+RESEND_API_KEY=tu_api_key_de_resend
+```
 
-## License
+4. Ejecuta el proyecto en modo desarrollo:
+```bash
+npm run dev
+```
 
-All rights reserved © 2025. Unauthorized use is prohibited.
+## Despliegue en Netlify
+
+Este proyecto está configurado para ser desplegado en Netlify. 
+
+### Pasos para desplegar:
+
+1. Crea una cuenta en [Netlify](https://www.netlify.com/)
+2. Conecta tu repositorio de GitHub
+3. Configura las variables de entorno:
+   - RESEND_API_KEY
+
+Netlify detectará automáticamente la configuración en el archivo `netlify.toml` y:
+- Construirá el proyecto con `vite build`
+- Publicará la carpeta `dist`
+- Desplegará las funciones serverless de la carpeta `api`
+- Configurará las redirecciones necesarias
+
+### Estructura del proyecto
+
+```
+├── api/                 # Funciones serverless para Netlify
+│   └── reservas.js      # Función para manejar reservas
+├── public/              # Archivos estáticos
+├── src/                 # Código fuente del frontend
+│   ├── components/      # Componentes React
+│   ├── contexts/        # Contextos React
+│   ├── lib/             # Utilidades
+│   └── ...
+├── .env                 # Variables de entorno locales
+├── netlify.toml         # Configuración de Netlify
+└── package.json         # Dependencias y scripts
+```
+
+## Desarrollo local con funciones Netlify
+
+Para probar las funciones de Netlify localmente:
+
+1. Instala Netlify CLI globalmente:
+```bash
+npm install -g netlify-cli
+```
+
+2. Inicia el servidor de desarrollo de Netlify:
+```bash
+netlify dev
+```
+
+Esto ejecutará tanto tu aplicación frontend como las funciones serverless localmente.
