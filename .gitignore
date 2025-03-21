@@ -40,4 +40,18 @@ yarn-error.log
 
 # Logs
 logs
-*.log 
+*.log
+
+# Environment variables
+.env
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+push.bat
+create_repo.ps1
+
+# Otros archivos del sistema
+.DS_Store
+Thumbs.db 
