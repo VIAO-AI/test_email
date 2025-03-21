@@ -1,4 +1,5 @@
 import os
+import argparse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -66,31 +67,32 @@ def enviar_email_reserva(nombre, email, telefono, fecha, hora, personas, mensaje
 
 # Ejemplo de uso
 if __name__ == "__main__":
-    # Ejemplo de reserva de mesa
-    enviar_email_reserva(
-        nombre="Usuario de Prueba",
-        email="test@example.com",
-        telefono="123456789",
-        fecha="2024-03-22",
-        hora="19:00",
-        personas="4",
-        mensaje="Prueba de reserva",
-        tipo_reserva="mesa"
-    )
+    parser = argparse.ArgumentParser(description='Enviar correo de reserva')
+    parser.add_argument('--nombre', required=True, help='Nombre del cliente')
+    parser.add_argument('--email', required=True, help='Correo electrónico del cliente')
+    parser.add_argument('--telefono', required=True, help='Teléfono del cliente')
+    parser.add_argument('--fecha', required=True, help='Fecha de la reserva')
+    parser.add_argument('--hora', required=True, help='Hora de la reserva')
+    parser.add_argument('--personas', required=True, help='Número de personas')
+    parser.add_argument('--mensaje', default='', help='Mensaje adicional')
+    parser.add_argument('--tipo_reserva', default='mesa', choices=['mesa', 'evento'], help='Tipo de reserva')
+    parser.add_argument('--tipo_evento', default=None, help='Tipo de evento (solo para eventos)')
+    parser.add_argument('--asistentes', default=None, help='Número de asistentes (solo para eventos)')
+    parser.add_argument('--descripcion_evento', default=None, help='Descripción del evento (solo para eventos)')
     
-    # Ejemplo de reserva de evento (descomenta para probar)
-    """
+    args = parser.parse_args()
+    
+    # Enviar el email con los argumentos recibidos
     enviar_email_reserva(
-        nombre="Organizador de Evento",
-        email="organizador@example.com",
-        telefono="987654321",
-        fecha="2024-04-15",
-        hora="20:00",
-        personas="25",
-        mensaje="Necesitamos decoración especial",
-        tipo_reserva="evento",
-        tipo_evento="Cumpleaños",
-        asistentes="25",
-        descripcion_evento="Fiesta de cumpleaños con pastel y decoración"
+        nombre=args.nombre,
+        email=args.email,
+        telefono=args.telefono,
+        fecha=args.fecha,
+        hora=args.hora,
+        personas=args.personas,
+        mensaje=args.mensaje,
+        tipo_reserva=args.tipo_reserva,
+        tipo_evento=args.tipo_evento,
+        asistentes=args.asistentes,
+        descripcion_evento=args.descripcion_evento
     )
-    """

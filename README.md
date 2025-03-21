@@ -1,53 +1,108 @@
-# Sistema de Reservas - El Rincón de Jorgito
 
-Este proyecto implementa un sistema de correo electrónico para el formulario de reservas del sitio web del restaurante "El Rincón de Jorgito".
+# El Rincon de Jorgito - Web App
 
-## Funcionalidades
+## Description
 
-- Envío de correos electrónicos con detalles de reservas
-- Soporte para reservas de mesa y eventos
-- Integración con la API de Resend para el envío de correos
+El Rincon de Jorgito is a modern and functional web platform for a Peruvian restaurant, allowing online orders, dish customization, delivery or pickup options, multiple payment methods, and a loyalty program called "JorgitoRewards."
 
-## Requisitos
+## Main Features
 
-- Python 3.6 o superior
-- Resend API Key
+- Online orders with dish customization.
+- Delivery and pickup options.
+- Various payment methods.
+- "JorgitoRewards" loyalty program.
+- Modern and optimized interface.
+- Reservation management integrated with Supabase and Vercel.
+- Automated Edge Function deployment via GitHub Actions.
 
-## Configuración
+## Installation and Setup
 
-1. Clona este repositorio
-2. Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+1. Clone the repository:
+   ```sh
+   https://github.com/VIAO-AI/el-rincon-digital.git
    ```
-   RESEND_API_KEY=tu_api_key_de_resend
+2. Access the project directory:
+   ```sh
+   cd el-rincon-digital
    ```
-3. Instala las dependencias:
+3. Install dependencies:
+   ```sh
+   npm install
    ```
-   pip install -r requirements.txt
+4. Configure environment variables in `.env`:
+   ```env
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_KEY=your_supabase_key
+   ```
+5. Start the development server:
+   ```sh
+   npm run dev
    ```
 
-## Uso
+## GitHub Actions Deployment Setup
 
-Para probar el envío de correos:
+The project is configured to automatically deploy Supabase Edge Functions using GitHub Actions. To set this up:
+
+1. In your GitHub repository, go to Settings > Secrets and Variables > Actions
+2. Add the following secrets:
+   - `SUPABASE_ACCESS_TOKEN`: Your Supabase access token
+   - `RESEND_API_KEY`: Your Resend API key (if using Resend for emails)
+3. When you push changes to the `main` branch that affect files in `supabase/functions/handle-reservation`, 
+   GitHub Actions will automatically deploy the updated Edge Function.
+
+## Project Structure
 
 ```
-python main.py
+el-rincon-digital-main/
+│── public/                 # Archivos estáticos y recursos
+│   ├── images-uploads/    # Imágenes subidas por usuarios
+│   ├── favicon.ico         # Ícono del sitio
+│   ├── placeholder.svg     # Imagen de marcador de posición
+│
+│── src/                    # Código fuente principal
+│   ├── components/         # Componentes reutilizables
+│   │   ├── ui/             # Componentes de UI (botones, formularios, etc.)
+│   │   ├── FoodItem.tsx    # Ejemplo de componente
+│   │   ├── Navbar.tsx      # Barra de navegación
+│   │   ├── Footer.tsx      # Pie de página
+│   │
+│   ├── contexts/           # Context API para estado global
+│   │   ├── LanguageContext.tsx
+│   │
+│   ├── hooks/              # Hooks personalizados
+│   │   ├── use-mobile.tsx  # Hook para detectar móvil
+│   │
+│   ├── lib/                # Funciones utilitarias
+│   │   ├── utils.ts
+│   │
+│   ├── pages/              # Páginas principales
+│   │   ├── Index.tsx       # Página de inicio
+│   │   ├── About.tsx       # Página "Sobre Nosotros"
+│   │   ├── Contact.tsx     # Página de contacto
+│   │   ├── Menu.tsx        # Página del menú
+│   │   ├── Admin.tsx       # Panel de administración
+│   │   ├── NotFound.tsx    # Página 404
+│   │
+│   ├── App.tsx             # Componente raíz
+│   ├── main.tsx            # Punto de entrada principal
+│
+│── .github/                # Configuración de GitHub Actions
+│   ├── workflows/
+│   │   ├── deploy-edge-functions.yml
+│
+│── .gitignore              # Archivos ignorados por Git
+│── package.json            # Dependencias del proyecto
+│── tailwind.config.ts      # Configuración de Tailwind CSS
+│── vite.config.ts          # Configuración de Vite
+│── tsconfig.json           # Configuración de TypeScript
+│── README.md               # Documentación del proyecto
+
 ```
 
-## Integración con el sitio web
+## Contribution
 
-Para integrar este sistema con tu formulario web, puedes:
+This project is private and protected by copyright. Any unauthorized reproduction, distribution, or modification is strictly prohibited.
 
-1. Crear un endpoint API que reciba los datos del formulario
-2. Llamar a la función `enviar_email_reserva` con los datos recibidos
+## License
 
-## Configuración de dominio
-
-Para utilizar tu dominio personalizado con Resend:
-
-1. Verifica tu dominio en Resend
-2. Configura los registros DNS necesarios
-3. Cambia `DOMINIO_VERIFICADO = False` a `DOMINIO_VERIFICADO = True` en el archivo main.py
-
-## Licencia
-
-Todos los derechos reservados - El Rincón de Jorgito 
+All rights reserved © 2025. Unauthorized use is prohibited.

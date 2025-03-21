@@ -31,6 +31,8 @@ node_modules/
 npm-debug.log
 yarn-debug.log
 yarn-error.log
+pnpm-debug.log
+lerna-debug.log
 
 # IDE
 .idea/
@@ -48,10 +50,12 @@ logs
 # Archivos temporales
 *.tmp
 *.temp
-*.log
 push.bat
 create_repo.ps1
 
 # Otros archivos del sistema
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Copia local del proyecto R-R-J
+R-R-J/ 
